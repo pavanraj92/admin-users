@@ -18,7 +18,7 @@
                 <div class="card">                    
                     <div class="table-responsive">
                          <div class="card-body">      
-                            <table class="table table-bordered table-responsive-lg">                            
+                            <table class="table table-responsive-lg table-no-border">
                                 <tbody>
                                     <tr>
                                         <th scope="row">Name</th>

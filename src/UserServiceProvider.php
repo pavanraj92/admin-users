@@ -24,7 +24,7 @@ class UserServiceProvider extends ServiceProvider
             __DIR__ . '/../config/user.php' => config_path('constants/admin/user.php'),
             __DIR__ . '/../src/Controllers' => app_path('Http/Controllers/Admin/UserManager'),
             __DIR__ . '/../src/Models' => app_path('Models/Admin/User'),
-            __DIR__ . '/routes/web.php' => base_path('routes/admin/admin_user.php'),
+            __DIR__ . '/routes/web.php' => base_path('routes/admin/user.php'),
         ], 'user');
 
 
@@ -36,7 +36,11 @@ class UserServiceProvider extends ServiceProvider
             return; // Avoid errors before migration
         }
 
-        $slug = DB::table('admins')->latest()->value('website_slug') ?? 'admin';
+        $admin = DB::table('admins')
+            ->orderBy('created_at', 'asc')
+            ->first();
+            
+        $slug = $admin->website_slug ?? 'admin';
 
         Route::middleware('web')
             ->prefix("{$slug}/admin") // dynamic prefix

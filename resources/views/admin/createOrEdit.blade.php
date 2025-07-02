@@ -83,7 +83,7 @@
                         </div>
                        
                         <div class="form-group">
-                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
                             <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Back</a>
                         </div>
                     </form>
@@ -114,6 +114,7 @@
 
             //jquery validation for the form
             $('#userForm').validate({
+                ignore: [],
                 rules: {
                     first_name: {
                         required: true,
@@ -151,6 +152,17 @@
                         required: "Please enter mobile no.",
                         digits: "Please enter a valid mobile number",
                     }
+                },
+                submitHandler: function(form) {
+                    const $btn = $('#saveBtn');
+                    $btn.prop('disabled', true).text('Saving...');
+                    form.submit();
+                },
+                errorElement: 'div',
+                errorClass: 'text-danger custom-error',
+                errorPlacement: function(error, element) {
+                    $('.validation-error').hide(); // hide blade errors
+                    error.insertAfter(element);
                 }
             });
         });
