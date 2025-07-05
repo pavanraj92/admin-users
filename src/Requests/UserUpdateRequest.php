@@ -14,7 +14,12 @@ class UserUpdateRequest extends FormRequest
         return [
             'first_name' => 'required|string|min:3|max:255',
             'last_name' => 'required|string|min:3|max:255',
-            'email' => 'required|string|min:3|max:255|email',
+            'email' => [
+                'required',
+                'regex:/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/',
+                'max:255',
+                'unique:users,email,' . $this->route('user')->id,
+            ],
             'mobile' => 'required|digits_between:3,15|numeric',
             'status' => 'required|in:0,1',
         ];
