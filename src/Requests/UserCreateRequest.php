@@ -21,7 +21,7 @@ class UserCreateRequest extends FormRequest
                 'unique:users,email',
                 'regex:/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/'
             ],
-            'mobile' => 'required|digits_between:3,15|numeric',
+            'mobile' => 'required|digits_between:7,15|numeric',
             'status' => 'required|in:0,1',
         ];
     }

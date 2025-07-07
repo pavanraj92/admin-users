@@ -137,11 +137,13 @@
                 rules: {
                     first_name: {
                         required: true,
-                        minlength: 3
+                        minlength: 3,
+                        alphabetsOnly: true
                     },
                     last_name: {
                         required: true,
-                        minlength: 3
+                        minlength: 3,
+                        alphabetsOnly: true
                     },
                     email: {
                         required: true,

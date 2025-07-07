@@ -20,7 +20,7 @@ class UserUpdateRequest extends FormRequest
                 'max:255',
                 'unique:users,email,' . $this->route('user')->id,
             ],
-            'mobile' => 'required|digits_between:3,15|numeric',
+            'mobile' => 'required|digits_between:7,15|numeric',
             'status' => 'required|in:0,1',
         ];
     }
