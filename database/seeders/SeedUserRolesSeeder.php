@@ -1,6 +1,6 @@
 <?php
 
-namespace Packages\Admin\Users\Database\Seeders;
+namespace packages\admin\users\database\seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
