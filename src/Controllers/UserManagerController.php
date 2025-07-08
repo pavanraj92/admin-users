@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use admin\users\Requests\UserCreateRequest;
 use admin\users\Requests\UserUpdateRequest;
 use admin\users\Models\User;
+use admin\users\Models\UserRole;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use admin\users\Mail\WelcomeMail;
@@ -16,36 +17,40 @@ class UserManagerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, string $type)
     {
         try {
-            $users = User::
-                filter($request->query('keyword'))
+            $role = UserRole::where('slug', $type)->firstOrFail();
+
+            $users = User::where('role_id', $role->id)
+                ->filter($request->query('keyword'))
                 ->filterByStatus($request->query('status'))
                 ->latest()
-                ->paginate(5)
+                ->paginate(User::getPerPageLimit())
                 ->withQueryString();
 
-            return view('user::admin.index', compact('users'));
+            return view('user::admin.index', compact('users', 'role','type'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load users: ' . $e->getMessage());
         }
     }
 
-    public function create()
+    public function create(string $type)
     {
         try {
-            return view('user::admin.createOrEdit');
+            $role = UserRole::where('slug', $type)->firstOrFail();
+            return view('user::admin.createOrEdit', compact('role','type'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load users: ' . $e->getMessage());
         }
     }
 
-    public function store(UserCreateRequest $request)
+    public function store(UserCreateRequest $request, string $type)
     {
-        
         try {
+            $role = UserRole::where('slug', $type)->firstOrFail();
             $requestData = $request->validated();
+            $requestData['role_id'] = $role->id;
 
             $plainPassword = \Str::random(8);
             $requestData['password'] = Hash::make($plainPassword);
@@ -55,7 +60,7 @@ class UserManagerController extends Controller
     
             // Send welcome mail
             Mail::to($user->email)->send(new WelcomeMail($user, $plainPassword));
-            return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
+            return redirect()->route('admin.users.index', ['type' => $type])->with('success', 'User created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load users: ' . $e->getMessage());
         }
@@ -64,37 +69,39 @@ class UserManagerController extends Controller
     /**
      * show user details
      */
-    public function show(User $user)
+    public function show(string $type, User $user)
     {
         try {
-            return view('user::admin.show', compact('user'));
+            $role = UserRole::where('slug', $type)->firstOrFail();
+            return view('user::admin.show', compact('user', 'type','role'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load users: ' . $e->getMessage());
         }
     }
 
-    public function edit(User $user)
+    public function edit(string $type, User $user)
     {
         try {
-            return view('user::admin.createOrEdit', compact('user'));
+            $role = UserRole::where('slug', $type)->firstOrFail();
+            return view('user::admin.createOrEdit', compact('user', 'type','role'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load user for editing: ' . $e->getMessage());
         }
     }
 
-    public function update(UserUpdateRequest $request, User $user)
+    public function update(UserUpdateRequest $request, string $type, User $user)
     {
         try {
             $requestData = $request->validated();
 
             $user->update($requestData);
-            return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
+            return redirect()->route('admin.users.index', ['type' => $type])->with('success', 'User updated successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load user for editing: ' . $e->getMessage());
         }
     }
 
-    public function destroy(User $user)
+    public function destroy(string $type, User $user)
     {
         try {
             $user->delete();
@@ -104,7 +111,7 @@ class UserManagerController extends Controller
         }
     }
 
-    public function updateStatus(Request $request)
+    public function updateStatus(Request $request, string $type)
     {
         try {
             $user = User::findOrFail($request->id);
@@ -121,7 +128,7 @@ class UserManagerController extends Controller
                 . ' data-toggle="tooltip"'
                 . ' data-placement="top"'
                 . ' title="' . $tooltip . '"'
-                . ' data-url="' . route('admin.users.updateStatus') . '"'
+                . ' data-url="' . route('admin.users.updateStatus', ['type' => $type]) . '"'
                 . ' data-method="POST"'
                 . ' data-status="' . $dataStatus . '"'
                 . ' data-id="' . $user->id . '"'

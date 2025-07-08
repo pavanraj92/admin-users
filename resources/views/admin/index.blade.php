@@ -1,11 +1,11 @@
 @extends('admin::admin.layouts.master')
 
-@section('title', 'Users Management')
+@section('title',  $role->name . 's Management')
 
-@section('page-title', 'Manage Users')
+@section('page-title', 'Manage ' .$role->name.'s' )
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active" aria-current="page">Manage Users</li>
+    <li class="breadcrumb-item active" aria-current="page">Manage {{$role->name}}</li>
 @endsection
 
 @section('content')
@@ -16,7 +16,7 @@
             <div class="col-12">
                 <div class="card card-body">
                     <h4 class="card-title">Filter</h4>
-                    <form action="{{ route('admin.users.index') }}" method="GET" id="filterForm">
+                    <form action="{{ route('admin.users.index', ['type' => $type]) }}" method="GET" id="filterForm">
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
@@ -38,7 +38,7 @@
                         </div>
                         <div class="text-right">
                             <button type="submit" form="filterForm" class="btn btn-primary mb-3">Filter</button>
-                            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary mb-3">Reset</a>
+                            <a href="{{ route('admin.users.index', ['type' => $type]) }}" class="btn btn-secondary mb-3">Reset</a>
                         </div>
                     </form>
                 </div>
@@ -49,7 +49,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="text-right">
-                            <a href="{{ route('admin.users.create') }}" class="btn btn-primary mb-3">Create New User</a>
+                            <a href="{{ route('admin.users.create', ['type' => $type]) }}" class="btn btn-primary mb-3">Create New {{ $role->name }}</a>
                         </div>
                     
                         <div class="table-responsive">
@@ -79,28 +79,30 @@
                                                     @if ($user->status == '1')
                                                         <a href="javascript:void(0)" data-toggle="tooltip" data-placement="top"
                                                             title="Click to change status to inactive"
-                                                            data-url="{{ route('admin.users.updateStatus') }}"
+                                                            data-url="{{ route('admin.users.updateStatus', ['type' => $type]) }}"
                                                             data-method="POST" data-status="0" data-id="{{ $user->id }}"
                                                             class="btn btn-success btn-sm update-status">Active</a>
                                                     @else
                                                         <a href="javascript:void(0)" data-toggle="tooltip" data-placement="top"
                                                             title="Click to change status to active"
-                                                            data-url="{{ route('admin.users.updateStatus') }}"
+                                                            data-url="{{ route('admin.users.updateStatus', ['type' => $type]) }}"
                                                             data-method="POST" data-status="1"
                                                             data-id="{{ $user->id }}"
                                                             class="btn btn-warning btn-sm update-status">InActive</a>
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    {{ $user->created_at->format('Y-m-d H:i:s') }}
+                                                    {{ $user->created_at
+                                                        ? $user->created_at->format(config('GET.admin_date_time_format') ?? 'Y-m-d H:i:s')
+                                                        : '—' }}
                                                 </td>
                                                 <td>
-                                                    <a href="{{ route('admin.users.edit', $user) }}"
+                                                    <a href="{{ route('admin.users.edit', ['type' => $type, 'user' => $user]) }}"
                                                         data-toggle="tooltip"
                                                         data-placement="top"
                                                         title="Edit this record"
                                                         class="btn btn-success btn-sm"><i class="mdi mdi-pencil"></i></a>
-                                                    <a href="{{ route('admin.users.show', $user) }}" 
+                                                    <a href="{{ route('admin.users.show', ['type' => $type, 'user' => $user]) }}" 
                                                         data-toggle="tooltip"
                                                         data-placement="top"
                                                         title="View this record"
@@ -109,7 +111,7 @@
                                                         data-toggle="tooltip" 
                                                         data-placement="top"
                                                         title="Delete this record" 
-                                                        data-url="{{ route('admin.users.destroy', $user) }}"
+                                                        data-url="{{ route('admin.users.destroy', ['type' => $type, 'user' => $user]) }}"
                                                         data-text="Are you sure you want to delete this record?"                                                    
                                                         data-method="DELETE"
                                                         class="btn btn-danger btn-sm delete-record" ><i class="mdi mdi-delete"></i></a>
