@@ -4,34 +4,42 @@ namespace admin\users\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
 
-class User extends Model
+class UserRole extends Model
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory;
 
     /**
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'role_id',
-        'first_name',
-        'last_name',
-        'email',
-        'mobile',
-        'status'
+        'name',
+        'status',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+    
+        static::creating(function ($user_role) {
+            if (empty($user_role->slug)) {
+                $user_role->slug = Str::slug($user_role->name, '_');
+            }
+        });
+    
+        static::updating(function ($user_role) {
+            if ($user_role->isDirty('name')) {
+                $user_role->slug = Str::slug($user_role->name, '_');
+            }
+        });
+    }    
 
     public function scopeFilter($query, $name)
     {
         if ($name) {
-            return $query->where(function ($q) use ($name) {
-                $q->where('first_name', 'like', '%' . $name . '%')
-                  ->orWhere('last_name', 'like', '%' . $name . '%');
-            });
+            return $query->where('name', 'like', '%' . $name . '%');
         }
         return $query;
     }
@@ -47,13 +55,6 @@ class User extends Model
         return $query;
     }
 
-    public function getFullNameAttribute()
-    {
-        $first = trim($this->first_name ?? '');
-        $last = trim($this->last_name ?? '');
-        return trim("{$first} {$last}");
-    }
-
     public static function getPerPageLimit(): int
     {
         return Config::has('get.admin_page_limit')
@@ -61,4 +62,3 @@ class User extends Model
             : 10;
     }
 }
-
