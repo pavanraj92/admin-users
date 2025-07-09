@@ -38,6 +38,7 @@ class UserServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../database/migrations' => base_path('Modules/Users/database/migrations'),
             __DIR__ . '/../resources/views' => base_path('Modules/Users/resources/views/'),
+            __DIR__ . '/../database/seeders/SeedUserRolesSeeder.php' => base_path('Modules/Users/database/seeders/SeedUserRolesSeeder.php'),
         ], 'user');
        
         $this->registerAdminRoutes();
@@ -99,6 +100,9 @@ class UserServiceProvider extends ServiceProvider
             
             // Routes
             __DIR__ . '/routes/web.php' => base_path('Modules/Users/routes/web.php'),
+
+              // Seeders
+             __DIR__ . '/../database/seeders/SeedUserRolesSeeder.php' => base_path('Modules/Users/database/seeders/SeedUserRolesSeeder.php'),
         ];
 
         foreach ($filesWithNamespaces as $source => $destination) {
@@ -130,6 +134,7 @@ class UserServiceProvider extends ServiceProvider
             'namespace admin\\users\\Models;' => 'namespace Modules\\Users\\app\\Models;',
             'namespace admin\\users\\Mail;' => 'namespace Modules\\Users\\app\\Mail;',
             'namespace admin\\users\\Requests;' => 'namespace Modules\\Users\\app\\Http\\Requests;',
+            'namespace packages\\admin\\users\\database\\seeders;' => 'namespace Modules\\Users\\database\\seeders;',
             
             // Use statements transformations
             'use admin\\users\\Controllers\\' => 'use Modules\\Users\\app\\Http\\Controllers\\Admin\\',
@@ -157,6 +162,8 @@ class UserServiceProvider extends ServiceProvider
             $content = $this->transformRequestNamespaces($content);
         } elseif (str_contains($sourceFile, 'routes')) {
             $content = $this->transformRouteNamespaces($content);
+        } elseif (str_contains($sourceFile, 'seeders')) {
+            $content = $this->transformSeederNamespaces($content);
         }
 
         return $content;
@@ -226,6 +233,12 @@ class UserServiceProvider extends ServiceProvider
     protected function transformRequestNamespaces($content)
     {
         // Any request-specific transformations
+        return $content;
+    }
+
+    protected function transformSeederNamespaces($content)
+    {
+        // Add any seeder-specific transformations here if needed
         return $content;
     }
 
