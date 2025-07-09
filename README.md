@@ -18,13 +18,13 @@ This package allows you to perform CRUD operations for managing users in the adm
 
 ## Example Endpoints
 
-| Method | Endpoint        | Description         |
-|--------|----------------|---------------------|
-| GET    | `/users`       | List all users      |
-| POST   | `/users`       | Create a new user   |
-| GET    | `/users/{id}`  | Get user details    |
-| PUT    | `/users/{id}`  | Update a user       |
-| DELETE | `/users/{id}`  | Delete a user       |
+| Method | Endpoint              | Description         |
+|--------|-----------------------|---------------------|
+| GET    | `/users/{type}`       | List all users      |
+| POST   | `/users/{type}`       | Create a new user   |
+| GET    | `/users/{type}/{id}`  | Get user details    |
+| PUT    | `/users/{type}/{id}`  | Update a user       |
+| DELETE | `/users/{type}/{id}`  | Delete a user       |
 
 ## Requirements
 
@@ -47,16 +47,38 @@ Add the following to your `composer.json` to use the package from a local path:
 ## Installation
 
 ```bash
-composer require admin/user
+composer require admin/user:@dev
 ```
 
-## Publish Files
+## Usage
 
-After installing, publish the module's migrations, config, views, or other assets:
+1. Publish the configuration and migration files:
+    ```bash
+    php artisan user:publish --force
 
-```bash
-php artisan vendor:publish --tag=user
+    composer dump-autoload
+    
+    php artisan migrate
+    ```
+2. Access the User manager from your admin dashboard.
+
+## Example
+
+```php
+// Creating a new user
+$user = new User();
+$user->first_name = 'John';
+$user->last_name = 'Doe';
+$user->email = 'john.doe@example.com';
+$user->mobile = '9876543210';
+$user->status = 1;
+$user->save();
+```
+
+## Customization
+
+You can customize views, routes, and permissions by editing the configuration file.
 
 ## License
 
-MIT
+This package is open-sourced software licensed under the Dotsquares.write code in the readme.md file regarding to the admin/user manager
