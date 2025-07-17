@@ -2,11 +2,11 @@
 
 @section('title',  $role->name . 's Management')
 
-@section('page-title', 'Create '.$role->name.'s')
+@section('page-title', isset($user) ? 'Edit '.$role->name : 'Create '.$role->name)
 
 @section('breadcrumb')
     <li class="breadcrumb-item active" aria-current="page"><a href="{{ route('admin.users.index', ['type' => $type]) }}">Manage {{$role->name}}s</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Create {{$role->name}}</li>
+    <li class="breadcrumb-item active" aria-current="page">{{isset($user) ? 'Edit '.$role->name : 'Create '.$role->name}}</li>
 @endsection
 
 @section('content')
