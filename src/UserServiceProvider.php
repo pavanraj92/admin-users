@@ -19,6 +19,8 @@ class UserServiceProvider extends ServiceProvider
             resource_path('views/admin/user'), // Published views second
             __DIR__ . '/../resources/views'      // Package views as fallback
         ], 'user');
+
+        $this->mergeConfigFrom(__DIR__.'/../config/user.php', 'user.constants');
         
         // Also register module views with a specific namespace for explicit usage
         if (is_dir(base_path('Modules/Users/resources/views'))) {

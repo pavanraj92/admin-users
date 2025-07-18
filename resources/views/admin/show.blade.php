@@ -34,7 +34,7 @@
                                     </tr>
                                     <tr>
                                         <th scope="row">Status</th>
-                                        <td scope="col"> {!! config('admin.constants.aryStatusLabel.' . $user->status, 'N/A') !!}</td>
+                                        <td scope="col"> {!! config('user.constants.aryStatusLabel.' . $user->status, 'N/A') !!}</td>
                                     </tr>                                
                                     <tr>
                                         <th scope="row">Created At</th>

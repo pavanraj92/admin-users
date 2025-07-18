@@ -12,15 +12,15 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => 'required|string|min:3|max:255',
-            'last_name' => 'required|string|min:3|max:255',
+            'first_name' => 'required|string|min:3|max:100',
+            'last_name' => 'required|string|min:3|max:100',
             'email' => [
                 'required',
                 'regex:/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/',
-                'max:255',
+                'max:100',
                 'unique:users,email,' . $this->route('user')->id,
             ],
-            'mobile' => 'required|digits_between:7,15|numeric',
+            'mobile' => 'required|regex:/^[0-9]{7,15}$/',
             'status' => 'required|in:0,1',
         ];
     }
