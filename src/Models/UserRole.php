@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Config;
+use Kyslik\ColumnSortable\Sortable;
 
 class UserRole extends Model
 {
-    use HasFactory;
+    use HasFactory, Sortable;
 
     /**
      * The attributes that are mass assignable.
@@ -19,22 +20,27 @@ class UserRole extends Model
         'status',
     ];
 
+    protected $sortable = [
+        'name',
+        'status'
+    ];
+
     protected static function boot()
     {
         parent::boot();
-    
+
         static::creating(function ($user_role) {
             if (empty($user_role->slug)) {
                 $user_role->slug = Str::slug($user_role->name, '_');
             }
         });
-    
+
         static::updating(function ($user_role) {
             if ($user_role->isDirty('name')) {
                 $user_role->slug = Str::slug($user_role->name, '_');
             }
         });
-    }    
+    }
 
     public function scopeFilter($query, $name)
     {

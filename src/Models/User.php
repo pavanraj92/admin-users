@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Config;
+use Kyslik\ColumnSortable\Sortable;
 
 class User extends Model
 {
-    use HasFactory, Notifiable, SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes, Sortable;
 
     /**
      * The attributes that are mass assignable.
@@ -24,13 +25,20 @@ class User extends Model
         'status'
     ];
 
+    protected $sortable = [
+        'name',
+        'email',
+        'status',
+        'created_at',
+    ];
+
 
     public function scopeFilter($query, $name)
     {
         if ($name) {
             return $query->where(function ($q) use ($name) {
                 $q->where('first_name', 'like', '%' . $name . '%')
-                  ->orWhere('last_name', 'like', '%' . $name . '%');
+                    ->orWhere('last_name', 'like', '%' . $name . '%');
             });
         }
         return $query;
@@ -61,4 +69,3 @@ class User extends Model
             : 10;
     }
 }
-

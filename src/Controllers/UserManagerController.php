@@ -35,6 +35,7 @@ class UserManagerController extends Controller
             $users = User::where('role_id', $role->id)
                 ->filter($request->query('keyword'))
                 ->filterByStatus($request->query('status'))
+                ->sortable()
                 ->latest()
                 ->paginate(User::getPerPageLimit())
                 ->withQueryString();
