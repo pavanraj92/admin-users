@@ -2,7 +2,7 @@
 
 @section('title', $role->name . 's Management')
 
-@section('page-title', 'Manage ' .$role->name.'s' )
+@section('page-title', $role->name.' Manager')
 
 @section('breadcrumb')
 <li class="breadcrumb-item active" aria-current="page">{{$role->name}} Manager</li>
