@@ -39,7 +39,7 @@
                             <div class="form-group">
                                 <label for="created_at">&nbsp;</label>
                                 <button type="submit" form="filterForm" class="btn btn-primary mt-4">Filter</button>
-                                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary mt-4">Reset</a>
+                                <a href="{{ route('admin.users.index', ['type' => $type]) }}" class="btn btn-secondary mt-4">Reset</a>
                             </div>
                         </div>
                     </div>
