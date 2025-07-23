@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use admin\users\Controllers\UserManagerController;
 
-Route::name('admin.')->middleware(['web','auth:admin'])->group(function () {  
+Route::name('admin.')->middleware(['web','admin.auth'])->group(function () {  
     Route::prefix('users/{type}')->name('users.')->group(function () {
         Route::resource('', UserManagerController::class)->parameters([
             '' => 'user',
