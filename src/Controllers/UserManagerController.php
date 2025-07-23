@@ -71,7 +71,7 @@ class UserManagerController extends Controller
 
             // Send welcome mail
             Mail::to($user->email)->send(new WelcomeMail($user, $plainPassword));
-            return redirect()->route('admin.users.index', ['type' => $type])->with('success', 'User created successfully.');
+            return redirect()->route('admin.users.index', ['type' => $type])->with('success', $role->name.' created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load users: ' . $e->getMessage());
         }
@@ -104,9 +104,9 @@ class UserManagerController extends Controller
     {
         try {
             $requestData = $request->validated();
-
+            $role = UserRole::where('slug', $type)->firstOrFail();
             $user->update($requestData);
-            return redirect()->route('admin.users.index', ['type' => $type])->with('success', 'User updated successfully.');
+            return redirect()->route('admin.users.index', ['type' => $type])->with('success',  $role->name.' updated successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load user for editing: ' . $e->getMessage());
         }
