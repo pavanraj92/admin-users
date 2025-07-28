@@ -24,22 +24,47 @@ class WelcomeMail extends Mailable
 
     public function build()
     {
-        $emailTemplate = \DB::table('emails')->where('slug', 'register_user')->first(['subject', 'description']);
-
-        $subject = $emailTemplate->subject;
-        $content = $emailTemplate->description;
-
-        $content = str_replace('%EMAIL_FOOTER%', config('GET.email_footer_text'), $content);
+        try {
+            if (\Schema::hasTable('emails')) {
+                $emailTemplate = \DB::table('emails')->where('slug', 'register_user')->first(['subject', 'description']);
+            } else {
+                $emailTemplate = null;
+            }
+        } catch (\Exception $e) {
+            $emailTemplate = null;
+        }
+    
+        $subject = $emailTemplate?->subject ?? 'Welcome to ' . env('APP_NAME');
+        $content = $emailTemplate?->description ?? '
+            <p>Dear %USER_NAME%,</p>
+    
+            <p>Thank you for registering with <strong>%APP_NAME%</strong>. Your account has been successfully created, and you now have access to our Quotation Management System.</p>
+    
+            <p><strong>Login Credentials:</strong></p>
+            <p>Email Address: %EMAIL_ADDRESS%<br />
+            Password: %PASSWORD%</p>
+    
+            <p>If you have any questions or require assistance, please contact our support team.</p>
+    
+            <p>We wish you a productive experience!</p>
+    
+            <p>Best regards,<br />
+            The %APP_NAME% Team<br />
+            %EMAIL_FOOTER%</p>
+        ';
+    
+        // Replace placeholders
+        $content = str_replace('%EMAIL_FOOTER%', config('GET.email_footer_text', ''), $content);
         $subject = str_replace('%APP_NAME%', env('APP_NAME'), $subject);
         $content = str_replace('%APP_NAME%', env('APP_NAME'), $content);
-        $content = str_replace('%USER_NAME%', $this?->user?->full_name, $content);
-
-        $content = str_replace('%EMAIL_ADDRESS%', $this?->user?->email, $content);
+        $content = str_replace('%USER_NAME%', $this->user?->full_name, $content);
+        $content = str_replace('%EMAIL_ADDRESS%', $this->user?->email, $content);
         $content = str_replace('%PASSWORD%', $this->plainPassword, $content);
-        $result = $this->subject($subject)
+    
+        return $this->subject($subject)
             ->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'))
             ->replyTo(env('MAIL_FROM_ADDRESS'))
-            ->view('user::admin.email.welcome_mail')
+            ->view('admin::admin.email.master')
             ->with(['template' => $content]);
     }
 }
