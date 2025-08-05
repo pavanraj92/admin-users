@@ -1,6 +1,6 @@
-# admin-user
+# Admin User Manager
 
-This package allows you to perform CRUD operations for managing users in the admin panel.
+This Laravel module provides a simple CRUD (Create, Read, Update, Delete) interface for managing basic website users. It enables administrators to easily control and update core users used throughout the application.
 
 ## Features
 
