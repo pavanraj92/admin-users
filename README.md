@@ -18,13 +18,14 @@ This Laravel module provides a simple CRUD (Create, Read, Update, Delete) interf
 
 ## Example Endpoints
 
-| Method | Endpoint              | Description         |
-|--------|-----------------------|---------------------|
-| GET    | `/users/{type}`       | List all users      |
-| POST   | `/users/{type}`       | Create a new user   |
-| GET    | `/users/{type}/{id}`  | Get user details    |
-| PUT    | `/users/{type}/{id}`  | Update a user       |
-| DELETE | `/users/{type}/{id}`  | Delete a user       |
+| Method | Endpoint                     | Description         |
+|--------|------------------------------|---------------------|
+| GET    | `/users/{type}`              | List all users      |
+| POST   | `/users/{type}`              | Create a new user   |
+| GET    | `/users/{type}/{id}`         | Get user details    |
+| PUT    | `/users/{type}/{id}`         | Update a user       |
+| DELETE | `/users/{type}/{id}`         | Delete a user       |
+| POST   | `/users/{type}/updateStatus` | To update status    |
 
 ## Requirements
 
@@ -47,7 +48,7 @@ Add the following to your `composer.json` to use the package from a local path:
 ## Installation
 
 ```bash
-composer require admin/user:@dev
+composer require admin/users:@dev
 ```
 
 ## Usage
