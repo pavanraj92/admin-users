@@ -20,8 +20,14 @@ class UserServiceProvider extends ServiceProvider
             __DIR__ . '/../resources/views'      // Package views as fallback
         ], 'user');
 
-        $this->mergeConfigFrom(__DIR__.'/../config/user.php', 'user.constants');
-        
+        // Load published module config first (if it exists), then fallback to package config
+        if (file_exists(base_path('Modules/Users/config/user.php'))) {
+            $this->mergeConfigFrom(base_path('Modules/Users/config/user.php'), 'user.constants');
+        } else {
+            // Fallback to package config if published config doesn't exist
+            $this->mergeConfigFrom(__DIR__ . '/../config/user.php', 'user.constants');
+        }
+
         // Also register module views with a specific namespace for explicit usage
         if (is_dir(base_path('Modules/Users/resources/views'))) {
             $this->loadViewsFrom(base_path('Modules/Users/resources/views'), 'users-module');
@@ -32,24 +38,19 @@ class UserServiceProvider extends ServiceProvider
             $this->loadMigrationsFrom(base_path('Modules/Users/database/migrations'));
         }
 
-        // Also merge config from published module if it exists
-        if (file_exists(base_path('Modules/Users/config/user.php'))) {
-            $this->mergeConfigFrom(base_path('Modules/Users/config/user.php'), 'user.constants');
-        }
-
         // Only publish automatically during package installation, not on every request
         // Use 'php artisan users:publish' command for manual publishing
         // $this->publishWithNamespaceTransformation();
-        
+
         // Standard publishing for non-PHP files
         $this->publishes([
+            __DIR__ . '/../config/' => base_path('Modules/Users/config/'),
             __DIR__ . '/../database/migrations' => base_path('Modules/Users/database/migrations'),
             __DIR__ . '/../resources/views' => base_path('Modules/Users/resources/views/'),
             __DIR__ . '/../database/seeders/SeedUserRolesSeeder.php' => base_path('Modules/Users/database/seeders/SeedUserRolesSeeder.php'),
         ], 'user');
-       
-        $this->registerAdminRoutes();
 
+        $this->registerAdminRoutes();
     }
 
     protected function registerAdminRoutes()
@@ -61,7 +62,7 @@ class UserServiceProvider extends ServiceProvider
         $admin = DB::table('admins')
             ->orderBy('created_at', 'asc')
             ->first();
-            
+
         $slug = $admin->website_slug ?? 'admin';
 
         $routeFile = base_path('Modules/Users/routes/web.php');
@@ -96,36 +97,36 @@ class UserServiceProvider extends ServiceProvider
         $filesWithNamespaces = [
             // Controllers
             __DIR__ . '/../src/Controllers/UserManagerController.php' => base_path('Modules/Users/app/Http/Controllers/Admin/UserManagerController.php'),
-            
+
             // Models
             __DIR__ . '/../src/Models/User.php' => base_path('Modules/Users/app/Models/User.php'),
             __DIR__ . '/../src/Models/UserRole.php' => base_path('Modules/Users/app/Models/UserRole.php'),
 
-              // Mail
-              __DIR__ . '/../src/Mail/WelcomeMail.php' => base_path('Modules/Users/app/Mail/WelcomeMail.php'),
-            
+            // Mail
+            __DIR__ . '/../src/Mail/WelcomeMail.php' => base_path('Modules/Users/app/Mail/WelcomeMail.php'),
+
             // Requests
             __DIR__ . '/../src/Requests/UserCreateRequest.php' => base_path('Modules/Users/app/Http/Requests/UserCreateRequest.php'),
             __DIR__ . '/../src/Requests/UserUpdateRequest.php' => base_path('Modules/Users/app/Http/Requests/UserUpdateRequest.php'),
-            
+
             // Routes
             __DIR__ . '/routes/web.php' => base_path('Modules/Users/routes/web.php'),
 
-              // Seeders
-             __DIR__ . '/../database/seeders/SeedUserRolesSeeder.php' => base_path('Modules/Users/database/seeders/SeedUserRolesSeeder.php'),
+            // Seeders
+            __DIR__ . '/../database/seeders/SeedUserRolesSeeder.php' => base_path('Modules/Users/database/seeders/SeedUserRolesSeeder.php'),
         ];
 
         foreach ($filesWithNamespaces as $source => $destination) {
             if (File::exists($source)) {
                 // Create destination directory if it doesn't exist
                 File::ensureDirectoryExists(dirname($destination));
-                
+
                 // Read the source file
                 $content = File::get($source);
-                
+
                 // Transform namespaces based on file type
                 $content = $this->transformNamespaces($content, $source);
-                
+
                 // Write the transformed content to destination
                 File::put($destination, $content);
             }
@@ -145,13 +146,13 @@ class UserServiceProvider extends ServiceProvider
             'namespace admin\\users\\Mail;' => 'namespace Modules\\Users\\app\\Mail;',
             'namespace admin\\users\\Requests;' => 'namespace Modules\\Users\\app\\Http\\Requests;',
             'namespace packages\\admin\\users\\database\\seeders;' => 'namespace Modules\\Users\\database\\seeders;',
-            
+
             // Use statements transformations
             'use admin\\users\\Controllers\\' => 'use Modules\\Users\\app\\Http\\Controllers\\Admin\\',
             'use admin\\users\\Models\\' => 'use Modules\\Users\\app\\Models\\',
             'use admin\\users\\Mail\\' => 'use Modules\\Users\\app\\Mail\\',
             'use admin\\users\\Requests\\' => 'use Modules\\Users\\app\\Http\\Requests\\',
-            
+
             // Class references in routes
             'admin\\users\\Controllers\\UserManagerController' => 'Modules\\Users\\app\\Http\\Controllers\\Admin\\UserManagerController',
         ];
@@ -202,13 +203,13 @@ class UserServiceProvider extends ServiceProvider
             'use Modules\\Users\\app\\Mail\\WelcomeMail;',
             $content
         );
-        
+
         $content = str_replace(
             'use admin\\users\\Requests\\UserCreateRequest;',
             'use Modules\\Users\\app\\Http\\Requests\\UserCreateRequest;',
             $content
         );
-        
+
         $content = str_replace(
             'use admin\\users\\Requests\\UserUpdateRequest;',
             'use Modules\\Users\\app\\Http\\Requests\\UserUpdateRequest;',
@@ -227,7 +228,7 @@ class UserServiceProvider extends ServiceProvider
         return $content;
     }
 
-       /**
+    /**
      * Transform mail-specific namespaces
      */
     protected function transformMailNamespaces($content)
@@ -267,4 +268,3 @@ class UserServiceProvider extends ServiceProvider
         return $content;
     }
 }
-
