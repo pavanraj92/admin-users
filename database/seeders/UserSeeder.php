@@ -43,7 +43,7 @@ class UserSeeder extends Seeder
                 'last_name'  => 'Smith',
                 'email'      => 'jane@example.com',
                 'mobile'     => '7777777777',
-                'status'     => 'inactive',
+                'status'     => 0,
                 'created_at' => $now,
                 'updated_at' => $now,
             ],

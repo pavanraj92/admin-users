@@ -16,9 +16,9 @@ return new class extends Migration
             $table->unsignedInteger('role_id')->nullable(); 
             $table->string('first_name', 100)->nullable();
             $table->string('last_name', 100)->nullable();
-            $table->string('email', 100)->unique();
+            $table->string('email', 100)->nullable();
             $table->string('mobile', 100)->nullable();
-            $table->string('status')->nullable();
+            $table->boolean('status')->nullable()->default(true)->comment('0 = Inactive, 1 = Active');
             $table->softDeletes();
             $table->timestamps();
         });

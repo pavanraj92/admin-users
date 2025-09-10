@@ -3,6 +3,7 @@
 namespace admin\users\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UserUpdateRequest extends FormRequest
 {
@@ -18,7 +19,7 @@ class UserUpdateRequest extends FormRequest
                 'required',
                 'regex:/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/',
                 'max:100',
-                'unique:users,email,' . $this->route('user')->id,
+                Rule::unique('users', 'email')->ignore($this->route('user')->id)->whereNull('deleted_at'),
             ],
             'mobile' => 'required|regex:/^[0-9]{7,15}$/',
             'status' => 'required|in:0,1',
